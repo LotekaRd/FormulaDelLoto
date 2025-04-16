@@ -1,30 +1,32 @@
 import asyncio
-from telegram.ext import Application, CommandHandler
+from telegram.ext import Application
 
-# Token Telegram
-TELEGRAM_BOT_TOKEN = "7606091350:AAGEKVoR0E-D5rdRQk36LIwdHGlDhlXD4Hw"
+TOKEN = "7606091350:AAGEKVoR0E-D5rdRQk36LIwdHGlDhlXD4Hw"
 
-# Fonction de démarrage
-async def start(update, context):
-    await update.message.reply_text("Bonjour ! Je suis votre bot.")
-
-# Fonction principale
 async def main():
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    application = Application.builder().token(TOKEN).build()
 
-    # Ajoutez vos handlers ici
-    application.add_handler(CommandHandler("start", start))
+    # Ajoutez ici vos handlers si nécessaire
+    # Exemple : application.add_handler(CommandHandler("start", start_handler))
 
-    # Démarrez le bot en polling
+    print("Le bot est en cours d'exécution...")
     await application.run_polling()
 
-# Vérification pour éviter les erreurs de boucle déjà active
 if __name__ == "__main__":
+    # Cette partie gère le cas où une boucle est déjà en cours d'exécution
     try:
-        asyncio.run(main())
+        loop = asyncio.get_event_loop()
+
+        # Si la boucle est déjà en cours, on ne crée pas une nouvelle boucle
+        if loop.is_running():
+            print("Une boucle d'événements est déjà en cours, lancement dans la boucle existante...")
+            loop.create_task(main())  # Ajout de main à la boucle en cours
+        else:
+            asyncio.run(main())  # Si aucune boucle n'est en cours, on démarre avec asyncio.run()
+
     except RuntimeError as e:
         if str(e) == "This event loop is already running":
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(main())
+            print("Erreur corrigée : la boucle d'événements est déjà en cours.")
+            asyncio.get_event_loop().run_until_complete(main())
         else:
             raise
