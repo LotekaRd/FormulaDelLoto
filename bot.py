@@ -1,32 +1,40 @@
-import asyncio
-from telegram.ext import Application
+import logging
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = "7606091350:AAGEKVoR0E-D5rdRQk36LIwdHGlDhlXD4Hw"
+# Configurez le logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-async def main():
-    application = Application.builder().token(TOKEN).build()
+# Fonction de gestion de la commande /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user = update.effective_user
+    await update.message.reply_html(
+        rf'Bonjour {user.mention_html()}!',
+    )
 
-    # Ajoutez ici vos handlers si nécessaire
-    # Exemple : application.add_handler(CommandHandler("start", start_handler))
+# Fonction de gestion des erreurs
+def error(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.warning(f"Update {update} caused error {context.error}")
 
-    print("Le bot est en cours d'exécution...")
+# Fonction principale
+async def main() -> None:
+    """Start the bot and run polling"""
+    # Remplacez 'YOUR_TOKEN' par votre token d'API
+    application = Application.builder().token("7606091350:AAGEKVoR0E-D5rdRQk36LIwdHGlDhlXD4Hw").build()
+
+    # Ajoutez le gestionnaire de commandes
+    application.add_handler(CommandHandler("start", start))
+
+    # Ajoutez le gestionnaire d'erreurs
+    application.add_error_handler(error)
+
+    # Exécutez le bot avec un polling
     await application.run_polling()
 
-if __name__ == "__main__":
-    # Cette partie gère le cas où une boucle est déjà en cours d'exécution
-    try:
-        loop = asyncio.get_event_loop()
-
-        # Si la boucle est déjà en cours, on ne crée pas une nouvelle boucle
-        if loop.is_running():
-            print("Une boucle d'événements est déjà en cours, lancement dans la boucle existante...")
-            loop.create_task(main())  # Ajout de main à la boucle en cours
-        else:
-            asyncio.run(main())  # Si aucune boucle n'est en cours, on démarre avec asyncio.run()
-
-    except RuntimeError as e:
-        if str(e) == "This event loop is already running":
-            print("Erreur corrigée : la boucle d'événements est déjà en cours.")
-            asyncio.get_event_loop().run_until_complete(main())
-        else:
-            raise
+# Assurez-vous que la boucle d'événements est correctement gérée sans asyncio.run()
+if __name__ == '__main__':
+    import asyncio
+    # Utiliser la boucle d'événements déjà existante
+    asyncio.get_event_loop().run_until_complete(main())
