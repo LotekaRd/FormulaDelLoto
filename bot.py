@@ -1,6 +1,5 @@
 import logging
 from telegram.ext import Application, CommandHandler
-import os
 
 # Configurez le niveau de log
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -16,14 +15,12 @@ async def start(update, context):
 
 def main():
     """Démarre le bot et gère les commandes."""
+    # Crée l'application et ajoute un gestionnaire pour la commande /start
     application = Application.builder().token(TOKEN).build()
-
-    # Ajoutez le gestionnaire de commande pour la commande /start
     application.add_handler(CommandHandler('start', start))
 
-    # Lancement de la boucle de polling
+    # Lancer la gestion des mises à jour avec polling (sans boucle explicite)
     application.run_polling()
 
 if __name__ == '__main__':
     main()
-
