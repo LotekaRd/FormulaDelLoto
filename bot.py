@@ -1,17 +1,29 @@
-import asyncio
-from telegram.ext import Application
+import logging
+from telegram.ext import Application, CommandHandler
+import os
 
-TOKEN = "7606091350:AAGEKVoR0E-D5rdRQk36LIwdHGlDhlXD4Hw"  # Votre token Telegram
+# Configurez le niveau de log
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-async def main():
+# Remplacez par votre token
+TOKEN = '7606091350:AAGEKVoR0E-D5rdRQk36LIwdHGlDhlXD4Hw'
+
+async def start(update, context):
+    """Envoyer un message lorsque la commande /start est utilisée."""
+    await update.message.reply_text('Bonjour! Je suis votre bot.')
+
+def main():
+    """Démarre le bot et gère les commandes."""
     application = Application.builder().token(TOKEN).build()
-    await application.run_polling()
 
-if __name__ == "__main__":
-    # Vérifie si une boucle d'événements est déjà en cours
-    try:
-        # Si aucune boucle d'événements n'est en cours, on utilise asyncio.run()
-        asyncio.run(main())
-    except RuntimeError:
-        # Si une boucle d'événements est déjà en cours, on ne tente pas de la fermer
-        print("Une boucle d'événements est déjà en cours.")
+    # Ajoutez le gestionnaire de commande pour la commande /start
+    application.add_handler(CommandHandler('start', start))
+
+    # Lancement de la boucle de polling
+    application.run_polling()
+
+if __name__ == '__main__':
+    main()
+
