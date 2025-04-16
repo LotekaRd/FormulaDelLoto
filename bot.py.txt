@@ -1,0 +1,27 @@
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
+
+# Fonction de démarrage
+def start(update: Update, context: CallbackContext):
+    update.message.reply_text("Bienvenue sur La Fórmula del Loto ! Tapez /menu pour voir les options.")
+
+# Fonction de menu
+def menu(update: Update, context: CallbackContext):
+    update.message.reply_text('Choisissez une option: \n1. Accéder à l’abonnement\n2. Informations sur les paiements\n3. FAQ')
+
+# Lancer le bot
+def main():
+    # Remplace 'YOUR_TOKEN' par ton token d'API
+    updater = Updater("YOUR_TOKEN", use_context=True)
+    
+    dp = updater.dispatcher
+    
+    # Commandes du bot
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("menu", menu))
+    
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
