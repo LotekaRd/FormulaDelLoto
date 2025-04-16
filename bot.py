@@ -1,3 +1,4 @@
+import asyncio
 from telegram.ext import Application, CommandHandler
 
 # Votre token Telegram
@@ -8,16 +9,26 @@ async def start(update, context):
     await update.message.reply_text("Bonjour ! Je suis votre bot.")
 
 # Fonction principale
-def main():
+async def main():
     # Crée l'application Telegram
     application = Application.builder().token(TOKEN).build()
 
     # Ajoutez vos handlers ici
     application.add_handler(CommandHandler("start", start))
 
-    # Lancement en utilisant la méthode asynchrone proprement
-    application.run_polling()
+    # Lancement du bot en polling
+    await application.run_polling()
 
+# Lancement du bot
 if __name__ == "__main__":
-    main()
+    try:
+        asyncio.run(main())  # Essaie d'utiliser asyncio.run
+    except RuntimeError as e:
+        if str(e) == "This event loop is already running":
+            # Si une boucle d'événements existe déjà, utilise une approche différente
+            loop = asyncio.get_event_loop()
+            loop.create_task(main())
+            loop.run_forever()
+        else:
+            raise
 
