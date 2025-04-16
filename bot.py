@@ -1,31 +1,24 @@
-
-import os
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler
 
-# Récupérer le token Telegram depuis les variables d'environnement
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+# Remplacez ceci par votre token
+TOKEN = 7606091350:AAGEKVoR0E-D5rdRQk36LIwdHGlDhlXD4Hw
 
-if not TOKEN:
-    raise ValueError("Le token Telegram n'est pas défini ! Ajoutez-le dans les variables d'environnement.")
+# Fonction pour démarrer le bot
+async def start(update: Update, context):
+    await update.message.reply("Bonjour, je suis votre bot!")
 
-# Fonction pour répondre à la commande /start
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text("Bonjour ! Je suis votre bot Telegram prêt à vous aider ! 😊")
+# Fonction principale pour lancer l'application
+async def main():
+    # Créez l'application et passez le token
+    application = Application.builder().token(TOKEN).build()
 
-# Configurer le bot
-def main():
-    # Initialiser le bot avec le token
-    updater = Updater(token=TOKEN)
+    # Ajoutez un gestionnaire de commande "/start"
+    application.add_handler(CommandHandler("start", start))
 
-    # Ajouter un gestionnaire pour la commande /start
-    dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("start", start))
-
-    # Lancer le bot
-    print("Bot en ligne 🚀")
-    updater.start_polling()
-    updater.idle()
+    # Démarrer le bot
+    await application.run_polling()
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())
